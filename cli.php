@@ -35,7 +35,6 @@ class VendingMachine
 
     function __construct() {
         self::showHeader();
-        
     }
 
     public function __destruct() {
@@ -111,6 +110,24 @@ class VendingMachine
     private function returnUserChange(){
         if($this->total_money_input > 0){
             print "Please take your change: " . $this->currency . number_format($this->total_money_input,2) . "\n";
+
+            $available_coins = $this->available_coins;
+            
+            $remaining_amount = $this->total_money_input;
+            
+            
+            rsort($available_coins);
+            
+            
+            foreach ($available_coins as $coin) {
+                $coin_value = floatval($coin);
+                if ($remaining_amount >= $coin_value) {
+                    $coin_count = floor($remaining_amount / $coin_value);
+                    $remaining_amount -= number_format($coin_count * $coin_value,2);
+                    $remaining_amount = round($remaining_amount,2);
+                    echo $coin_count . ' x ' . $this->currency . $coin . "\n";
+                }
+            }
         }
     }
 
@@ -233,6 +250,11 @@ class VendingMachine
         return $this->available_products[$id] ?? '';
     }
 
+    private function reduceTotalCount(){
+        $this->count_products--; 
+    }
+
+
     public function getProductTitle($id){
         $data = self::getProductById($id);
         return $data ? $data['title'] : '';
@@ -246,18 +268,11 @@ class VendingMachine
     public function reduceProductCount($id){
         $this->available_products[$id]['count']--; 
     }
-
-    public function reduceTotalCount(){
-        $this->count_products--; 
-    }
 }
 
 $VM = new VendingMachine();
 
 $VM->createOrder();
 
-// echo $VM->getProductTitle(1);
 
-    //$input = fread(STDIN, 1); 
-    // $input = rtrim($input, "\n");
 ?>
