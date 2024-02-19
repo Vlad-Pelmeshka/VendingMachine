@@ -12,6 +12,7 @@ class VendingMachine
     );
     private $count_roducts = 0;
     private $currency = '$';
+    private $selected_product = '';
     
     private $available_products = array(
         '0' => array(
@@ -39,38 +40,36 @@ class VendingMachine
     public function createOrder() {
 
         if(self::isProductsInMachine() != 0){
-            print "Now u can select to buy next products:\n";
-            
-            self::displayProductList();
             
             do { 
+                
+                print "Now u can select to buy next products:\n";
+                
+                self::displayProductList();
+
                 print "\nAre you ready to make an order? (Press 'Y' or 'N'): \n";
-                $b = fgetc(STDIN);
+
+                flush();
+                $input = fread(STDIN,1);
                 
             
-                if ($b == 'Y' || $b == 'y') {
+                if ($input == 'Y' || $input == 'y') {
                     break;
                 }
             
-                if ($b == 'N' || $b == 'n') {
+                if ($input == 'N' || $input == 'n') {
                     
                     self::showHeader();
-                    echo "Looking forward to seeing you next time\n";
+                    print "Looking forward to seeing you next time\n";
                     return;
                 }
                 
-                echo "\nSorry. But your entry is incorrect. ";
+                self::showHeader();
+                print "Sorry, but your entry is incorrect. ";
             } while (true);
 
-
-            self::showHeader();
-            print "\nLets do it! ";
+            self::selectProduct();
             
-            do {
-                print "Please choose one of the products (Input his number): \n";
-
-                self::displayProductList(true);
-            } while (false);
 
         }else{
             print "Sorry, but all of our products have now been sold out.\n";
@@ -84,6 +83,32 @@ class VendingMachine
     private function showHeader(){
         self::cls();
         print "\n------------------------------------\nWelcome to VendingMachine simulator!\n------------------------------------\n\n";
+    }
+    
+    private function selectProduct(){
+        self::showHeader();
+        print "Lets do it! ";
+
+        do {
+            print "Please choose one of the products (Input his number): \n";
+
+            self::displayProductList(true);
+
+            flush();
+            $input = fread(STDIN,10); 
+            $input = trim($input);
+
+            if (!is_numeric($input) || !self::getProductById($input)) {
+                
+                self::showHeader();
+                print "This option is not in the list. ";
+
+            }else{
+                $this->selected_product = $input;
+                break;
+            }
+
+        } while (true);
     }
 
     private function displayProductList($show_id = false){
@@ -122,11 +147,12 @@ class VendingMachine
         print("\033[2J\033[;H");
     }
 
-    /*private function getProductById($id){
+    private function getProductById($id){
+        var_dump($id);
         return $this->available_products[$id] ?? '';
     }
 
-    public function getProductTitle($id){
+    /*public function getProductTitle($id){
         $data = self::getProductById($id);
         return $data ? $data['title'] : '';
     }
@@ -148,6 +174,6 @@ $VM->createOrder();
 
 // echo $VM->getProductTitle(1);
 
-    //$b = fread(STDIN, 1); 
-    // $b = rtrim($b, "\n");
+    //$input = fread(STDIN, 1); 
+    // $input = rtrim($input, "\n");
 ?>
