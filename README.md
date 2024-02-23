@@ -12,7 +12,7 @@ How to start:
 Build an CLI (Console) script that will serve as Vending Machine (https://en.wikipedia.org/wiki/Vending_machine)
 You Vending Machine must:
 
-Output list of products and show there prices
+1. Output list of products and show there prices
 Coca-cola 1.50
 Snickers 1.20
 Lay's 2.00
